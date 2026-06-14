@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prode Mundial 2026</title>
+  <style>
+    :root {
+      --bg: #071528;
+      --card: #10233f;
+      --card2: #0d1d35;
+      --text: #f4f7fb;
+      --muted: #9fb0c8;
+      --line: #263c5d;
+      --accent: #40c9ff;
+      --good: #35d07f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #183a66 0, transparent 34%),
+        linear-gradient(180deg, #061326, #030914);
+      color: var(--text);
+    }
+
+    header {
+      padding: 22px 16px 12px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: .5px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .topbar {
+      max-width: 1100px;
+      margin: 0 auto 18px;
+      padding: 0 14px;
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 14px;
+    }
+
+    .ranking, .login-box, .group-card {
+      background: rgba(16, 35, 63, .92);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.28);
+    }
+
+    .ranking {
+      padding: 14px;
+    }
+
+    .ranking h2, .login-box h2 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px 7px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .login-box {
+      padding: 14px;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #08182d;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #00101f;
+      background: var(--accent);
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .fixture {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 14px 30px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .group-card {
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .group-title {
+      background: #f4f7fb;
+      color: #10233f;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 900;
+      padding: 7px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+
+    .match {
+      display: grid;
+      grid-template-columns: 1fr 38px 18px 38px 1fr;
+      align-items: center;
+      gap: 5px;
+      background: var(--card2);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      padding: 6px;
+      margin-bottom: 6px;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .team.right {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .flag {
+      width: 22px;
+      height: 15px;
+      border-radius: 3px;
+      background: #ddd;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex: 0 0 auto;
+    }
+
+    .team-name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .score {
+      width: 38px;
+      height: 30px;
+      border-radius: 9px;
+      border: 1px solid #36557e;
+      background: #edf3fa;
+      color: #071528;
+      text-align: center;
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .dash {
+      text-align: center;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .save {
+      margin-top: 8px;
+      background: var(--good);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 950px) {
+      .fixture { grid-template-columns: repeat(2, 1fr); }
+      .topbar { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      header h1 { font-size: 24px; }
+      .fixture { grid-template-columns: 1fr; }
+      .match { grid-template-columns: 1fr 34px 14px 34px 1fr; }
+      .score { width: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏆 Prode Mundial 2026</h1>
+    <p>Marcador exacto: 3 pts · Ganador / empate / perdedor: 1 pt</p>
+  </header>
+
+  <section class="topbar">
+    <div class="ranking">
+      <h2>Tabla de posiciones</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Participante</th>
+            <th>Pts</th>
+            <th>Exactos</th>
+            <th>G/E/P</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Pedro</td><td>18</td><td>4</td><td>6</td></tr>
+          <tr><td>2</td><td>Judith</td><td>15</td><td>3</td><td>6</td></tr>
+          <tr><td>3</td><td>Juan</td><td>12</td><td>2</td><td>6</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="login-box">
+      <h2>Ingresar</h2>
+      <input type="email" placeholder="Email" />
+      <input type="password" placeholder="Contraseña" />
+      <button>Loguearme</button>
+      <div class="note">Sin login se puede ver la tabla. Para pronosticar, hay que ingresar.</div>
+    </div>
+  </section>
+
+  <main class="fixture" id="fixture"></main>
+
+  <script>
+    const grupos = {
+      A: [
+        ["MEX", "🇲🇽", "RSA", "🇿🇦"],
+        ["KOR", "🇰🇷", "CZE", "🇨🇿"],
+        ["MEX", "🇲🇽", "KOR", "🇰🇷"],
+        ["RSA", "🇿🇦", "CZE", "🇨🇿"],
+        ["RSA", "🇿🇦", "KOR", "🇰🇷"],
+        ["CZE", "🇨🇿", "MEX", "🇲🇽"]
+      ],
+      B: [
+        ["CAN", "🇨🇦", "QAT", "🇶🇦"],
+        ["SUI", "🇨🇭", "COL", "🇨🇴"],
+        ["CAN", "🇨🇦", "SUI", "🇨🇭"],
+        ["QAT", "🇶🇦", "COL", "🇨🇴"],
+        ["QAT", "🇶🇦", "SUI", "🇨🇭"],
+        ["COL", "🇨🇴", "CAN", "🇨🇦"]
+      ],
+      C: [
+        ["BRA", "🇧🇷", "SCO", "🏴󠁧󠁢󠁳󠁣󠁴󠁿"],
+        ["HAI", "🇭🇹", "MAR", "🇲🇦"],
+        ["BRA", "🇧🇷", "HAI", "🇭🇹"],
+        ["SCO", "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "MAR", "🇲🇦"],
+        ["SCO", "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "HAI", "🇭🇹"],
+        ["MAR", "🇲🇦", "BRA", "🇧🇷"]
+      ],
+      D: [
+        ["USA", "🇺🇸", "PAR", "🇵🇾"],
+        ["AUS", "🇦🇺", "TUN", "🇹🇳"],
+        ["USA", "🇺🇸", "AUS", "🇦🇺"],
+        ["PAR", "🇵🇾", "TUN", "🇹🇳"],
+        ["PAR", "🇵🇾", "AUS", "🇦🇺"],
+        ["TUN", "🇹🇳", "USA", "🇺🇸"]
+      ],
+      E: [
+        ["GER", "🇩🇪", "CUW", "🇨🇼"],
+        ["CIV", "🇨🇮", "ECU", "🇪🇨"],
+        ["GER", "🇩🇪", "CIV", "🇨🇮"],
+        ["CUW", "🇨🇼", "ECU", "🇪🇨"],
+        ["CUW", "🇨🇼", "CIV", "🇨🇮"],
+        ["ECU", "🇪🇨", "GER", "🇩🇪"]
+      ],
+      F: [
+        ["NED", "🇳🇱", "JPN", "🇯🇵"],
+        ["POL", "🇵🇱", "TUN", "🇹🇳"],
+        ["NED", "🇳🇱", "POL", "🇵🇱"],
+        ["JPN", "🇯🇵", "TUN", "🇹🇳"],
+        ["JPN", "🇯🇵", "POL", "🇵🇱"],
+        ["TUN", "🇹🇳", "NED", "🇳🇱"]
+      ],
+      G: [
+        ["BEL", "🇧🇪", "EGY", "🇪🇬"],
+        ["IRN", "🇮🇷", "NZL", "🇳🇿"],
+        ["BEL", "🇧🇪", "IRN", "🇮🇷"],
+        ["EGY", "🇪🇬", "NZL", "🇳🇿"],
+        ["EGY", "🇪🇬", "IRN", "🇮🇷"],
+        ["NZL", "🇳🇿", "BEL", "🇧🇪"]
+      ],
+      H: [
+        ["ESP", "🇪🇸", "CPV", "🇨🇻"],
+        ["KSA", "🇸🇦", "URU", "🇺🇾"],
+        ["ESP", "🇪🇸", "KSA", "🇸🇦"],
+        ["CPV", "🇨🇻", "URU", "🇺🇾"],
+        ["CPV", "🇨🇻", "KSA", "🇸🇦"],
+        ["URU", "🇺🇾", "ESP", "🇪🇸"]
+      ]
+    };
+
+    const fixture = document.getElementById("fixture");
+
+    Object.entries(grupos).forEach(([grupo, partidos]) => {
+      const card = document.createElement("section");
+      card.className = "group-card";
+
+      card.innerHTML = `<div class="group-title">Grupo ${grupo}</div>`;
+
+      partidos.forEach((p, i) => {
+        const [local, flagLocal, visitante, flagVisitante] = p;
+
+        card.innerHTML += `
+          <div class="match">
+            <div class="team">
+              <span class="flag">${flagLocal}</span>
+              <span class="team-name">${local}</span>
+            </div>
+            <input class="score" type="number" min="0" inputmode="numeric" aria-label="Goles ${local}">
+            <div class="dash">-</div>
+            <input class="score" type="number" min="0" inputmode="numeric" aria-label="Goles ${visitante}">
+            <div class="team right">
+              <span class="team-name">${visitante}</span>
+              <span class="flag">${flagVisitante}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      card.innerHTML += `<button class="save">Guardar Grupo ${grupo}</button>`;
+      fixture.appendChild(card);
+    });
+  </script>
+</body>
+</html>
