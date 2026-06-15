@@ -254,11 +254,11 @@
 
 <button id="btnLogin">Loguearme</button>
 <button id="btnCrear">Crear usuario</button>
-
+      
 <div id="mensaje" class="note"></div>
-      <div class="note">Sin login se puede ver la tabla. Para pronosticar, hay que ingresar.</div>
-    </div>
-  </section>
+<div class="note">Sin login se puede ver la tabla. Para pronosticar, hay que ingresar.</div>
+</div>
+</section>
 
   <main class="fixture" id="fixture"></main>
 
@@ -423,6 +423,26 @@ document.getElementById("btnCrear").addEventListener("click", async () => {
 
   mensaje.textContent = "Usuario creado correctamente";
   console.log(data);
+}) document.getElementById("btnLogin").addEventListener("click", async () => {
+
+  const usuario = document.getElementById("usuario").value;
+  const password = document.getElementById("password").value;
+
+  const { data, error } = await db.rpc("login_usuario", {
+    p_nombre: usuario,
+    p_password: password
+  });
+
+  const mensaje = document.getElementById("mensaje");
+
+  if (error || !data || data.length === 0) {
+    mensaje.textContent = "Usuario o contraseña incorrectos";
+    return;
+  }
+
+  mensaje.textContent = "Sesión iniciada";
+
+  console.log("Usuario logueado:", data[0]);
 });
 </script>
 </body>
