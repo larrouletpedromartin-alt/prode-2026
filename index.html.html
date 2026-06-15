@@ -221,6 +221,17 @@
       .match { grid-template-columns: 1fr 34px 14px 34px 1fr; }
       .score { width: 34px; }
     }
+    .aviso-global {
+  max-width: 1100px;
+  margin: 0 auto 18px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #ffcc66;
+  color: #071528;
+  font-weight: 900;
+  text-align: center;
+  font-size: 14px;
+}
   </style>
 </head>
 <body>
@@ -259,7 +270,9 @@
 <div class="note">Sin login se puede ver la tabla. Para pronosticar, hay que ingresar.</div>
 </div>
 </section>
-
+<div id="aviso-global" class="aviso-global">
+  ⚠️ COMPLETÁ TODOS LOS PARTIDOS DEL GRUPO ANTES DE GUARDAR. UNA VEZ GUARDADO NO PODRÁ MODIFICARSE.
+</div>
   <main class="fixture" id="fixture"></main>
 
   <script>
