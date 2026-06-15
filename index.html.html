@@ -383,7 +383,7 @@ document.getElementById("btnCrear").addEventListener("click", async () => {
   const usuario = document.getElementById("usuario").value;
   const password = document.getElementById("password").value;
 
-  const { data, error } = await supabase.rpc("registrar_usuario", {
+  const { data, error } = await db.rpc("registrar_usuario", {
     p_nombre: usuario,
     p_password: password
   });
