@@ -377,6 +377,35 @@ const db = window.supabase.createClient(
   SUPABASE_KEY
 );
 console.log("Supabase conectado",db);
+  async function cargarRanking() {
+  const { data, error } = await db
+    .from("ranking")
+    .select("*");
+
+  const tbody = document.getElementById("ranking-body");
+
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="5">Error cargando ranking</td></tr>`;
+    console.error(error);
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  data.forEach((r, index) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${r.nombre}</td>
+        <td>${r.puntos}</td>
+        <td>${r.exactos}</td>
+        <td>${r.aciertos_gpe}</td>
+      </tr>
+    `;
+  });
+}
+
+cargarRanking();
 
 document.getElementById("btnCrear").addEventListener("click", async () => {
 
