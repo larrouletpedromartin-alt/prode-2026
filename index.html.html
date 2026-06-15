@@ -443,9 +443,14 @@ document.getElementById("btnCrear").addEventListener("click", async () => {
     return;
   }
 
-  mensaje.textContent = "Sesión iniciada";
+localStorage.setItem(
+  "usuario",
+  JSON.stringify(data[0])
+);
 
-  console.log("Usuario logueado:", data[0]);
+mensaje.textContent = "Sesión iniciada";
+
+console.log("Usuario logueado:", data[0]);
 });
 </script>
 </body>
