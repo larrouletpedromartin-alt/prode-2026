@@ -265,6 +265,7 @@
 
 <button id="btnLogin">Loguearme</button>
 <button id="btnCrear">Crear usuario</button>
+<button id="btnLogout">Cerrar sesión</button>      
       
 <div id="mensaje" class="note"></div>
 <div class="note">Sin login se puede ver la tabla. Para pronosticar, hay que ingresar.</div>
@@ -482,6 +483,13 @@ usuarioActual = data[0];
 mensaje.textContent = "Sesión iniciada";
 
 console.log("Usuario logueado:", data[0]);
+});
+  document.getElementById("btnLogout").addEventListener("click", () => {
+
+  localStorage.removeItem("usuario");
+
+  location.reload();
+
 });
 </script>
 </body>
