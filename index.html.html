@@ -450,6 +450,37 @@ async function cargarPartidos() {
 }
 
 cargarPartidos();  
+  async function cargarPronosticosUsuario() {
+  if (!usuarioActual) return;
+
+  const { data, error } = await db
+    .from("pronosticos")
+    .select("*")
+    .eq("usuario_id", usuarioActual.id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  data.forEach(pronostico => {
+    const inputLocal = document.querySelector(
+      `.score[data-partido-id="${pronostico.partido_id}"][data-lado="local"]`
+    );
+
+    const inputVisitante = document.querySelector(
+      `.score[data-partido-id="${pronostico.partido_id}"][data-lado="visitante"]`
+    );
+
+    if (inputLocal && inputVisitante) {
+      inputLocal.value = pronostico.goles_local;
+      inputVisitante.value = pronostico.goles_visitante;
+
+      inputLocal.disabled = true;
+      inputVisitante.disabled = true;
+    }
+  });
+}
 
 document.getElementById("btnCrear").addEventListener("click", async () => {
 
@@ -495,7 +526,8 @@ localStorage.setItem(
   JSON.stringify(data[0])
 );
 usuarioActual = data[0];
-actualizarVistaSesion();    
+actualizarVistaSesion(); 
+cargarPronosticosUsuario();
 document.getElementById("btnLogin").style.display = "none";
 document.getElementById("btnCrear").style.display = "none";
 document.getElementById("btnLogout").style.display = "block";    
