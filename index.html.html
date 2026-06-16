@@ -467,6 +467,10 @@ async function cargarPartidos() {
   });
 
   actualizarVistaSesion();
+
+if (usuarioActual) {
+  cargarPronosticosUsuario();
+}
 }
 
 cargarPartidos();  
