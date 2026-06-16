@@ -387,6 +387,15 @@ const db = window.supabase.createClient(
   SUPABASE_KEY
 );
 console.log("Supabase conectado",db);
+  let usuarioActual = null;
+
+const usuarioGuardado = localStorage.getItem("usuario");
+
+if (usuarioGuardado) {
+  usuarioActual = JSON.parse(usuarioGuardado);
+  document.getElementById("mensaje").textContent =
+    "Sesión iniciada como " + usuarioActual.nombre;
+}
   async function cargarRanking() {
   const { data, error } = await db
     .from("ranking")
@@ -460,7 +469,7 @@ localStorage.setItem(
   "usuario",
   JSON.stringify(data[0])
 );
-
+usuarioActual = data[0];
 mensaje.textContent = "Sesión iniciada";
 
 console.log("Usuario logueado:", data[0]);
