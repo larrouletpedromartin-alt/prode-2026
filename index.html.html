@@ -386,6 +386,72 @@ actualizarVistaSesion();
 }
 
 cargarRanking();
+async function cargarPartidos() {
+  const { data, error } = await db
+    .from("partidos")
+    .select("*")
+    .order("grupo", { ascending: true })
+    .order("fecha", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  grupos = {};
+
+  data.forEach(partido => {
+    if (!grupos[partido.grupo]) {
+      grupos[partido.grupo] = [];
+    }
+
+    grupos[partido.grupo].push([
+      partido.equipo_local,
+      "",
+      partido.equipo_visitante,
+      "",
+      partido.id
+    ]);
+  });
+
+  fixture.innerHTML = "";
+
+  Object.entries(grupos).forEach(([grupo, partidos]) => {
+    const card = document.createElement("section");
+    card.className = "group-card";
+
+    card.innerHTML = `<div class="group-title">Grupo ${grupo}</div>`;
+
+    partidos.forEach((p) => {
+      const [local, flagLocal, visitante, flagVisitante, partidoId] = p;
+
+      card.innerHTML += `
+        <div class="match">
+          <div class="team">
+            <span class="team-name">${local}</span>
+          </div>
+
+          <input class="score" type="number" min="0" inputmode="numeric" data-partido-id="${partidoId}" data-lado="local">
+
+          <div class="dash">-</div>
+
+          <input class="score" type="number" min="0" inputmode="numeric" data-partido-id="${partidoId}" data-lado="visitante">
+
+          <div class="team right">
+            <span class="team-name">${visitante}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    card.innerHTML += `<button class="save" onclick="guardarGrupo('${grupo}')">Guardar Grupo ${grupo}</button>`;
+    fixture.appendChild(card);
+  });
+
+  actualizarVistaSesion();
+}
+
+cargarPartidos();  
 
 document.getElementById("btnCrear").addEventListener("click", async () => {
 
