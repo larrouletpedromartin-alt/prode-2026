@@ -344,8 +344,11 @@
     };
 
     const fixture = document.getElementById("fixture");
-    if (!usuarioActual) {
+
+if (!usuarioActual) {
   fixture.style.display = "none";
+} else {
+  fixture.style.display = "grid";
 }
 
     Object.entries(grupos).forEach(([grupo, partidos]) => {
