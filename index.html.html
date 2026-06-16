@@ -348,6 +348,9 @@ if (usuarioGuardado) {
 
   document.getElementById("usuarioLogueado").textContent =
     "Hola " + usuarioActual.nombre;
+  if (usuarioActual.nombre.toLowerCase() === "pedro") {
+  document.getElementById("admin-resultados").style.display = "block";
+}
 
   document.getElementById("btnLogin").style.display = "none";
   document.getElementById("btnCrear").style.display = "none";
