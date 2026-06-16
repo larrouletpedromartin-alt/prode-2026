@@ -350,15 +350,7 @@
     
 const fixture = document.getElementById("fixture");
 
-function actualizarVistaSesion() {
-  if (usuarioActual) {
-    fixture.style.display = "grid";
-  } else {
-    fixture.style.display = "none";
-  }
-}
 
-actualizarVistaSesion();
 
     Object.entries(grupos).forEach(([grupo, partidos]) => {
       const card = document.createElement("section");
@@ -421,6 +413,15 @@ if (usuarioGuardado) {
   document.getElementById("btnCrear").style.display = "block";
   document.getElementById("btnLogout").style.display = "none";
 }
+  function actualizarVistaSesion() {
+  if (usuarioActual) {
+    fixture.style.display = "grid";
+  } else {
+    fixture.style.display = "none";
+  }
+}
+
+actualizarVistaSesion();
   async function cargarRanking() {
   const { data, error } = await db
     .from("ranking")
@@ -505,13 +506,7 @@ mensaje.textContent = "Sesión iniciada";
 
 console.log("Usuario logueado:", data[0]);
 });
-  document.getElementById("btnLogout").addEventListener("click", () => {
-
-  localStorage.removeItem("usuario");
-
-  location.reload();
-
-});
+  
   document.getElementById("btnLogout").addEventListener("click", () => {
 
   localStorage.removeItem("usuario");
