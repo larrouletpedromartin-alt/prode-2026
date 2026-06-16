@@ -474,6 +474,35 @@ if (usuarioActual) {
 }
 
 cargarPartidos();  
+  async function cargarAdminPartidos() {
+  const select = document.getElementById("adminPartido");
+
+  if (!select) return;
+
+  const { data, error } = await db
+    .from("partidos")
+    .select("*")
+    .order("grupo", { ascending: true })
+    .order("fecha", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  select.innerHTML = "";
+
+  data.forEach(partido => {
+    select.innerHTML += `
+      <option value="${partido.id}">
+        Grupo ${partido.grupo} — ${partido.equipo_local} vs ${partido.equipo_visitante}
+      </option>
+    `;
+  });
+}
+
+cargarAdminPartidos();
+  
   async function cargarPronosticosUsuario() {
   if (!usuarioActual) return;
 
