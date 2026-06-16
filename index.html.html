@@ -546,8 +546,11 @@ localStorage.setItem(
   JSON.stringify(data[0])
 );
 usuarioActual = data[0];
-actualizarVistaSesion(); 
-cargarPronosticosUsuario();
+actualizarVistaSesion();
+
+if (usuarioActual) {
+  cargarPronosticosUsuario();
+}
 document.getElementById("btnLogin").style.display = "none";
 document.getElementById("btnCrear").style.display = "none";
 document.getElementById("btnLogout").style.display = "block";    
