@@ -267,9 +267,10 @@
      
 <button id="btnCrear">Crear usuario</button>
     
-<button id="btnLogout">Cerrar sesión</button>      
+<button id="btnLogout" style="display:none;">Cerrar sesión</button>    
       
 <div id="mensaje" class="note"></div>
+<div id="usuarioLogueado" class="note"></div>      
 <div class="note">Sin login se puede ver la tabla. Para pronosticar, hay que ingresar.</div>
 </div>
 </section>
@@ -403,10 +404,12 @@ const usuarioGuardado = localStorage.getItem("usuario");
 if (usuarioGuardado) {
   usuarioActual = JSON.parse(usuarioGuardado);
 
-  document.getElementById("mensaje").textContent =
-    "Sesión iniciada como " + usuarioActual.nombre;
+  document.getElementById("usuarioLogueado").textContent =
+    "Hola " + usuarioActual.nombre;
 
-  fixture.style.display = "grid";
+  document.getElementById("btnLogin").style.display = "none";
+  document.getElementById("btnCrear").style.display = "none";
+  document.getElementById("btnLogout").style.display = "block";
 }
   async function cargarRanking() {
   const { data, error } = await db
@@ -482,9 +485,21 @@ localStorage.setItem(
   JSON.stringify(data[0])
 );
 usuarioActual = data[0];
+document.getElementById("btnLogin").style.display = "none";
+document.getElementById("btnCrear").style.display = "none";
+document.getElementById("btnLogout").style.display = "block";    
+document.getElementById("usuarioLogueado").textContent =
+  "Hola " + usuarioActual.nombre;    
 mensaje.textContent = "Sesión iniciada";
 
 console.log("Usuario logueado:", data[0]);
+});
+  document.getElementById("btnLogout").addEventListener("click", () => {
+
+  localStorage.removeItem("usuario");
+
+  location.reload();
+
 });
   document.getElementById("btnLogout").addEventListener("click", () => {
 
