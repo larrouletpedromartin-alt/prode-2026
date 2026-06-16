@@ -347,13 +347,18 @@
       ]
     };
 
-    const fixture = document.getElementById("fixture");
+    
+const fixture = document.getElementById("fixture");
 
-if (!usuarioActual) {
-  fixture.style.display = "none";
-} else {
-  fixture.style.display = "grid";
+function actualizarVistaSesion() {
+  if (usuarioActual) {
+    fixture.style.display = "grid";
+  } else {
+    fixture.style.display = "none";
+  }
 }
+
+actualizarVistaSesion();
 
     Object.entries(grupos).forEach(([grupo, partidos]) => {
       const card = document.createElement("section");
