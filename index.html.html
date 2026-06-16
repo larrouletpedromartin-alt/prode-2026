@@ -474,6 +474,7 @@ if (usuarioActual) {
 }
 
 cargarPartidos();  
+  
   async function cargarAdminPartidos() {
   const select = document.getElementById("adminPartido");
 
@@ -502,6 +503,35 @@ cargarPartidos();
 }
 
 cargarAdminPartidos();
+  document.getElementById("btnGuardarResultado").addEventListener("click", async () => {
+  const partidoId = document.getElementById("adminPartido").value;
+  const golesLocal = document.getElementById("adminGolesLocal").value;
+  const golesVisitante = document.getElementById("adminGolesVisitante").value;
+
+  if (golesLocal === "" || golesVisitante === "") {
+    alert("Cargá los dos goles.");
+    return;
+  }
+
+  const { error } = await db
+    .from("partidos")
+    .update({
+      goles_local: Number(golesLocal),
+      goles_visitante: Number(golesVisitante),
+      cerrado: true
+    })
+    .eq("id", Number(partidoId));
+
+  if (error) {
+    alert("Error al guardar resultado: " + error.message);
+    console.error(error);
+    return;
+  }
+
+  alert("Resultado real guardado.");
+  cargarRanking();
+  cargarPartidos();
+});
   
   async function cargarPronosticosUsuario() {
   if (!usuarioActual) return;
