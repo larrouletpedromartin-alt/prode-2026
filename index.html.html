@@ -411,6 +411,11 @@ if (usuarioGuardado) {
   document.getElementById("btnCrear").style.display = "none";
   document.getElementById("btnLogout").style.display = "block";
 }
+  else {
+  document.getElementById("btnLogin").style.display = "block";
+  document.getElementById("btnCrear").style.display = "block";
+  document.getElementById("btnLogout").style.display = "none";
+}
   async function cargarRanking() {
   const { data, error } = await db
     .from("ranking")
