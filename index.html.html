@@ -344,6 +344,9 @@
     };
 
     const fixture = document.getElementById("fixture");
+    if (!usuarioActual) {
+  fixture.style.display = "none";
+}
 
     Object.entries(grupos).forEach(([grupo, partidos]) => {
       const card = document.createElement("section");
@@ -393,8 +396,11 @@ const usuarioGuardado = localStorage.getItem("usuario");
 
 if (usuarioGuardado) {
   usuarioActual = JSON.parse(usuarioGuardado);
+
   document.getElementById("mensaje").textContent =
     "Sesión iniciada como " + usuarioActual.nombre;
+
+  fixture.style.display = "grid";
 }
   async function cargarRanking() {
   const { data, error } = await db
