@@ -507,7 +507,7 @@ mensaje.textContent = "Sesión iniciada";
 
 console.log("Usuario logueado:", data[0]);
 });
-function guardarGrupo(grupo) {
+async function guardarGrupo(grupo) {
   const inputsGrupo = [];
 
   document.querySelectorAll(".group-card").forEach(card => {
@@ -532,15 +532,43 @@ function guardarGrupo(grupo) {
     return;
   }
 
+  const pronosticos = [];
+
+  for (let i = 0; i < inputsGrupo.length; i += 2) {
+    const inputLocal = inputsGrupo[i];
+    const inputVisitante = inputsGrupo[i + 1];
+
+    pronosticos.push({
+      usuario_id: usuarioActual.id,
+      partido_id: Number(inputLocal.dataset.partidoId),
+      goles_local: Number(inputLocal.value),
+      goles_visitante: Number(inputVisitante.value)
+    });
+  }
+
+  const { error } = await db
+    .from("pronosticos")
+    .insert(pronosticos);
+
+  if (error) {
+    aviso.textContent = "⚠️ ERROR AL GUARDAR: " + error.message;
+    aviso.style.background = "#ff6b6b";
+    aviso.style.color = "#071528";
+    console.error(error);
+    return;
+  }
+
   aviso.textContent =
-    "✅ GRUPO " + grupo + " LISTO PARA GUARDAR. EN EL PRÓXIMO PASO SE ENVIARÁ A SUPABASE.";
+    "✅ GRUPO " + grupo + " GUARDADO CORRECTAMENTE. YA NO PODRÁ MODIFICARSE.";
   aviso.style.background = "#35d07f";
   aviso.style.color = "#071528";
 
   inputsGrupo.forEach(input => {
     input.disabled = true;
   });
-}  
+
+  cargarRanking();
+}
   document.getElementById("btnLogout").addEventListener("click", () => {
 
   localStorage.removeItem("usuario");
