@@ -406,12 +406,12 @@ async function cargarPartidos() {
     }
 
     grupos[partido.grupo].push([
-      partido.equipo_local,
-      "",
-      partido.equipo_visitante,
-      "",
-      partido.id
-    ]);
+  partido.equipo_local,
+  partido.bandera_local,
+  partido.equipo_visitante,
+  partido.bandera_visitante,
+  partido.id
+]);
   });
 
   fixture.innerHTML = "";
@@ -428,7 +428,8 @@ async function cargarPartidos() {
       card.innerHTML += `
         <div class="match">
           <div class="team">
-            <span class="team-name">${local}</span>
+  <span class="flag">${flagLocal}</span>
+  <span class="team-name">${local}</span>
           </div>
 
           <input class="score" type="number" min="0" inputmode="numeric" data-partido-id="${partidoId}" data-lado="local">
@@ -438,8 +439,9 @@ async function cargarPartidos() {
           <input class="score" type="number" min="0" inputmode="numeric" data-partido-id="${partidoId}" data-lado="visitante">
 
           <div class="team right">
-            <span class="team-name">${visitante}</span>
-          </div>
+  <span class="team-name">${visitante}</span>
+  <span class="flag">${flagVisitante}</span>
+        </div>
         </div>
       `;
     });
