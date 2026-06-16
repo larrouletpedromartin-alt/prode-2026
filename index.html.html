@@ -273,6 +273,20 @@
 <div id="aviso-global" class="aviso-global">
   📌 Completá todos los partidos de un grupo antes de guardarlo. Una vez guardado, no podrá modificarse.
 </div>
+  <div id="admin-resultados" class="aviso-global" style="display:none;">
+  <strong>ADMIN RESULTADOS</strong><br><br>
+
+  <select id="adminPartido"></select>
+
+  <div style="display:flex; gap:8px; margin-top:10px;">
+    <input id="adminGolesLocal" type="number" min="0" placeholder="Local" />
+    <input id="adminGolesVisitante" type="number" min="0" placeholder="Visitante" />
+  </div>
+
+  <button id="btnGuardarResultado" style="margin-top:10px;">
+    Guardar resultado real
+  </button>
+</div>
   <main class="fixture" id="fixture"></main>
 
   <script>
@@ -338,6 +352,9 @@ if (usuarioGuardado) {
   document.getElementById("btnLogin").style.display = "none";
   document.getElementById("btnCrear").style.display = "none";
   document.getElementById("btnLogout").style.display = "block";
+  if (usuarioActual.nombre.toLowerCase() === "pedro") {
+  document.getElementById("admin-resultados").style.display = "block";
+}
 }
   else {
   document.getElementById("btnLogin").style.display = "block";
