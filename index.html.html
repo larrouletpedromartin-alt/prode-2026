@@ -378,7 +378,7 @@ const fixture = document.getElementById("fixture");
         `;
       });
 
-      card.innerHTML += `<button class="save">Guardar Grupo ${grupo}</button>`;
+card.innerHTML += `<button class="save" onclick="guardarGrupo('${grupo}')">Guardar Grupo ${grupo}</button>`;
       fixture.appendChild(card);
     });
   </script>
@@ -506,7 +506,40 @@ mensaje.textContent = "Sesión iniciada";
 
 console.log("Usuario logueado:", data[0]);
 });
-  
+function guardarGrupo(grupo) {
+  const inputsGrupo = [];
+
+  document.querySelectorAll(".group-card").forEach(card => {
+    const titulo = card.querySelector(".group-title");
+
+    if (titulo && titulo.textContent.trim() === "Grupo " + grupo) {
+      card.querySelectorAll(".score").forEach(input => {
+        inputsGrupo.push(input);
+      });
+    }
+  });
+
+  const incompletos = inputsGrupo.some(input => input.value === "");
+
+  const aviso = document.getElementById("aviso-global");
+
+  if (incompletos) {
+    aviso.textContent =
+      "⚠️ COMPLETÁ TODOS LOS PARTIDOS DEL GRUPO " + grupo + " ANTES DE GUARDAR.";
+    aviso.style.background = "#ffcc66";
+    aviso.style.color = "#071528";
+    return;
+  }
+
+  aviso.textContent =
+    "✅ GRUPO " + grupo + " LISTO PARA GUARDAR. EN EL PRÓXIMO PASO SE ENVIARÁ A SUPABASE.";
+  aviso.style.background = "#35d07f";
+  aviso.style.color = "#071528";
+
+  inputsGrupo.forEach(input => {
+    input.disabled = true;
+  });
+}  
   document.getElementById("btnLogout").addEventListener("click", () => {
 
   localStorage.removeItem("usuario");
