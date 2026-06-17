@@ -410,14 +410,21 @@ actualizarVistaSesion();
   const tbody = document.getElementById("ranking-body");
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="5">Error cargando ranking</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6">Error cargando ranking</td></tr>`;
     console.error(error);
     return;
   }
 
+  const { count: partidosCerrados } = await db
+    .from("partidos")
+    .select("*", { count: "exact", head: true })
+    .eq("cerrado", true);
+
   tbody.innerHTML = "";
 
   data.forEach((r, index) => {
+    const errores = partidosCerrados - (r.exactos + r.aciertos_gpe);
+
     tbody.innerHTML += `
       <tr>
         <td>${index + 1}</td>
@@ -425,7 +432,7 @@ actualizarVistaSesion();
         <td>${r.puntos}</td>
         <td>${r.exactos}</td>
         <td>${r.aciertos_gpe}</td>
-        <td>0</td>
+        <td>${errores}</td>
       </tr>
     `;
   });
