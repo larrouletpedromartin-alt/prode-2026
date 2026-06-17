@@ -566,9 +566,16 @@ cargarPartidos();
   if (!usuarioActual) return;
 
   const { data, error } = await db
-    .from("pronosticos")
-    .select("*")
-    .eq("usuario_id", usuarioActual.id);
+  .from("pronosticos")
+  .select(`
+    *,
+    partidos (
+      goles_local,
+      goles_visitante,
+      cerrado
+    )
+  `)
+  .eq("usuario_id", usuarioActual.id);
 
   if (error) {
     console.error(error);
