@@ -521,7 +521,8 @@ cargarAdminPartidos();
       goles_visitante: Number(golesVisitante),
       cerrado: true
     })
-    .eq("id", Number(partidoId));
+    .eq("id", Number(partidoId))
+    .eq("cerrado", false);
 
   if (error) {
     alert("Error al guardar resultado: " + error.message);
