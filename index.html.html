@@ -514,7 +514,7 @@ cargarAdminPartidos();
     return;
   }
 
-  const { error } = await db
+  const { data, error } = await db
     .from("partidos")
     .update({
       goles_local: Number(golesLocal),
