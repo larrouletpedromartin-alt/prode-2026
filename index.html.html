@@ -249,52 +249,6 @@
   text-align: center;
   font-size: 14px;
 }
-    @media print {
-  header, .topbar, #aviso-global, .leyenda-colores, #admin-resultados, button {
-    display: none !important;
-  }
-
-  body {
-    background: white !important;
-    color: black !important;
-  }
-
-  .fixture {
-    display: block !important;
-    max-width: 100%;
-  }
-
-  .group-card {
-    border: 1px solid #999;
-    box-shadow: none;
-    margin-bottom: 12px;
-    page-break-inside: avoid;
-    color: black;
-    background: white;
-  }
-
-  .match {
-    background: white;
-    color: black;
-    border: 1px solid #ccc;
-  }
-
-  .score {
-    border: none;
-    background: white;
-    color: black;
-  }
-
-  body::before {
-    content: "PRODE MUNDIAL 2026 - COMPROBANTE DE PRONÓSTICOS";
-    display: block;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 900;
-    margin: 20px 0;
-    color: black;
-  }
-}
    @media print {
   header, .topbar, #aviso-global, .leyenda-colores, #admin-resultados, button {
     display: none !important;
@@ -470,7 +424,7 @@ if (usuarioGuardado) {
 
   document.getElementById("usuarioLogueado").textContent =
     "Hola " + usuarioActual.nombre;
-  if (usuarioActual.nombre.toLowerCase() === "pedro") {
+  if ((usuarioActual.rol === "admin" || usuarioActual.nombre.toLowerCase() === "pedro")) {
   document.getElementById("admin-resultados").style.display = "block";
 }
 
@@ -478,7 +432,7 @@ if (usuarioGuardado) {
   document.getElementById("btnCrear").style.display = "none";
   document.getElementById("btnLogout").style.display = "block";
   document.getElementById("btnPDF").style.display = "block";
-  if (usuarioActual.nombre.toLowerCase() === "pedro") {
+  if ((usuarioActual.rol === "admin" || usuarioActual.nombre.toLowerCase() === "pedro")) {
   document.getElementById("admin-resultados").style.display = "block";
 }
 }
@@ -486,6 +440,7 @@ if (usuarioGuardado) {
   document.getElementById("btnLogin").style.display = "block";
   document.getElementById("btnCrear").style.display = "block";
   document.getElementById("btnLogout").style.display = "none";
+  document.getElementById("btnPDF").style.display = "none";
 }
   function actualizarVistaSesion() {
   if (usuarioActual) {
@@ -803,34 +758,16 @@ document.getElementById("btnCrear").style.display = "none";
 document.getElementById("btnLogout").style.display = "block"; 
 document.getElementById("btnPDF").style.display = "block";    
 document.getElementById("usuarioLogueado").textContent =
-  "Hola " + usuarioActual.nombre;    
+  "Hola " + usuarioActual.nombre;
+
+if (usuarioActual.rol === "admin" || usuarioActual.nombre.toLowerCase() === "pedro") {
+  document.getElementById("admin-resultados").style.display = "block";
+}
+
 mensaje.textContent = "Sesión iniciada";
 
 console.log("Usuario logueado:", data[0]);
 });
-  async function usuarioCompletoPronosticos(usuarioId) {
-  const { count: totalPartidos, error: errorPartidos } = await db
-    .from("partidos")
-    .select("*", { count: "exact", head: true })
-    .eq("habilitado", true);
-
-  if (errorPartidos) {
-    console.error(errorPartidos);
-    return false;
-  }
-
-  const { count: totalPronosticos, error: errorPronosticos } = await db
-    .from("pronosticos")
-    .select("*", { count: "exact", head: true })
-    .eq("usuario_id", usuarioId);
-
-  if (errorPronosticos) {
-    console.error(errorPronosticos);
-    return false;
-  }
-
-  return totalPronosticos >= totalPartidos;
-}
 async function guardarGrupo(grupo) {
   const inputsGrupo = [];
 
@@ -891,20 +828,7 @@ async function guardarGrupo(grupo) {
     input.disabled = true;
   });
 
-    cargarRanking();
-
-  const completo = await usuarioCompletoPronosticos(usuarioActual.id);
-
-  if (completo) {
-    const quierePDF = confirm(
-      "✅ Ya cargaste todos tus pronósticos.\n\n¿Querés imprimir o guardar un comprobante PDF?"
-    );
-
-    if (quierePDF) {
-      window.print();
-    }
-  }
-}
+  cargarRanking();
 }
   document.getElementById("btnPDF").addEventListener("click", () => {
   window.print();
