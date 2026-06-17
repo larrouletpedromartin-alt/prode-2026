@@ -590,6 +590,11 @@ cargarPartidos();
 
       inputLocal.disabled = true;
       inputVisitante.disabled = true;
+      const match = inputLocal.closest(".match");
+
+if (match) {
+  match.classList.add("exacto");
+}
     }
   });
 }
