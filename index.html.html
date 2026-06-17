@@ -295,6 +295,50 @@
     color: black;
   }
 }
+   @media print {
+  header, .topbar, #aviso-global, .leyenda-colores, #admin-resultados, button {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .fixture {
+    display: block !important;
+  }
+
+  .group-card {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    border: 1px solid #999 !important;
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+  }
+
+  .match {
+    background: white !important;
+    color: black !important;
+  }
+
+  .score {
+    background: white !important;
+    color: black !important;
+    border: none !important;
+  }
+
+  body::before {
+    content: "PRODE MUNDIAL 2026 - COMPROBANTE DE PRONÓSTICOS";
+    display: block;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 900;
+    margin: 20px 0;
+    color: black;
+  }
+} 
   </style>
 </head>
 <body>
@@ -334,7 +378,10 @@
 <button id="btnLogout" style="display:none;">Cerrar sesión</button>    
       
 <div id="mensaje" class="note"></div>
-<div id="usuarioLogueado" class="note"></div>      
+<div id="usuarioLogueado" class="note"></div>  
+<button id="btnPDF" style="display:none; margin-top:8px;">
+  Guardar pronósticos PDF
+</button>      
 <div class="note">Sin login se puede ver la tabla. Para pronosticar, hay que ingresar.</div>
 </div>
 </section>
@@ -430,6 +477,7 @@ if (usuarioGuardado) {
   document.getElementById("btnLogin").style.display = "none";
   document.getElementById("btnCrear").style.display = "none";
   document.getElementById("btnLogout").style.display = "block";
+  document.getElementById("btnPDF").style.display = "block";
   if (usuarioActual.nombre.toLowerCase() === "pedro") {
   document.getElementById("admin-resultados").style.display = "block";
 }
@@ -752,7 +800,8 @@ if (usuarioActual) {
 
 document.getElementById("btnLogin").style.display = "none";
 document.getElementById("btnCrear").style.display = "none";
-document.getElementById("btnLogout").style.display = "block";    
+document.getElementById("btnLogout").style.display = "block"; 
+document.getElementById("btnPDF").style.display = "block";    
 document.getElementById("usuarioLogueado").textContent =
   "Hola " + usuarioActual.nombre;    
 mensaje.textContent = "Sesión iniciada";
@@ -857,6 +906,9 @@ async function guardarGrupo(grupo) {
   }
 }
 }
+  document.getElementById("btnPDF").addEventListener("click", () => {
+  window.print();
+});
   document.getElementById("btnLogout").addEventListener("click", () => {
 
   localStorage.removeItem("usuario");
