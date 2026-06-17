@@ -219,6 +219,14 @@
       border: 2px solid #ff6b6b;
       background: rgba(255, 107, 107, .18);
       }
+    .leyenda-colores {
+      max-width: 1100px;
+      margin: 10px auto;
+      padding: 8px 12px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--text);
+      }
     @media (max-width: 950px) {
       .fixture { grid-template-columns: repeat(2, 1fr); }
       .topbar { grid-template-columns: 1fr; }
@@ -286,6 +294,13 @@
 </section>
 <div id="aviso-global" class="aviso-global">
   📌 Completá todos los partidos de un grupo antes de guardarlo. Una vez guardado, no podrá modificarse.
+</div>
+  <div class="leyenda-colores">
+  🟩 Exacto (3 pts)
+  &nbsp;&nbsp;
+  🟨 Acierto G/E/P (1 pt)
+  &nbsp;&nbsp;
+  🟥 Error (0 pts)
 </div>
   <div id="admin-resultados" class="aviso-global" style="display:none;">
   <strong>ADMIN RESULTADOS</strong><br><br>
