@@ -515,24 +515,36 @@ cargarAdminPartidos();
   }
 
   const { data, error } = await db
-    .from("partidos")
-    .update({
-      goles_local: Number(golesLocal),
-      goles_visitante: Number(golesVisitante),
-      cerrado: true
-    })
-    .eq("id", Number(partidoId))
-    .eq("cerrado", false);
+  .from("partidos")
+  .update({
+    goles_local: Number(golesLocal),
+    goles_visitante: Number(golesVisitante),
+    cerrado: true
+  })
+  .eq("id", Number(partidoId))
+  .eq("cerrado", false)
+  .select();
 
-  if (error) {
-    alert("Error al guardar resultado: " + error.message);
-    console.error(error);
-    return;
-  }
+console.log("partidoId:", partidoId);
+console.log("DATA:", data);
+console.log("ERROR:", error);
+
+if (error) {
+  alert("Error al guardar resultado: " + error.message);
+  console.error(error);
+  return;
+}
+
+if (!data || data.length === 0) {
+  alert("Ese partido ya estaba cerrado o no se pudo actualizar.");
+  cargarAdminPartidos();
+  return;
+}
 
   alert("Resultado real guardado.");
-  cargarRanking();
-  cargarPartidos();
+cargarAdminPartidos();
+cargarRanking();
+cargarPartidos();
 });
   
   async function cargarPronosticosUsuario() {
