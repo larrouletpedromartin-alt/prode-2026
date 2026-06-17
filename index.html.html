@@ -519,12 +519,12 @@ cargarPartidos();
   if (!select) return;
 
   const { data, error } = await db
-    .from("partidos")
-    .select("*")
-    .eq("cerrado", false)
-    .order("grupo", { ascending: true })
-    .order("fecha", { ascending: true });
-
+  .from("partidos")
+  .select("*")
+  .eq("habilitado", true)
+  .eq("cerrado", false)
+  .order("grupo", { ascending: true })
+  .order("fecha", { ascending: true });
   if (error) {
     console.error(error);
     return;
