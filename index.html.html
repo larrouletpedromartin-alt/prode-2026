@@ -434,8 +434,9 @@ actualizarVistaSesion();
 cargarRanking();
 async function cargarPartidos() {
   const { data, error } = await db
-    .from("partidos")
-    .select("*")
+  .from("partidos")
+  .select("*")
+  .eq("habilitado", true)
     .order("grupo", { ascending: true })
     .order("fecha", { ascending: true });
 
