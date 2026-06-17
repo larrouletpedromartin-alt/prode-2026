@@ -599,8 +599,34 @@ cargarPartidos();
       inputVisitante.disabled = true;
       const match = inputLocal.closest(".match");
 
-if (match) {
-  match.classList.add("exacto");
+const match = inputLocal.closest(".match");
+
+if (match && pronostico.partidos && pronostico.partidos.cerrado) {
+  const glReal = pronostico.partidos.goles_local;
+  const gvReal = pronostico.partidos.goles_visitante;
+
+  const glPron = pronostico.goles_local;
+  const gvPron = pronostico.goles_visitante;
+
+  const exacto = glReal === glPron && gvReal === gvPron;
+
+  const signoReal =
+    glReal > gvReal ? "L" :
+    glReal < gvReal ? "V" :
+    "E";
+
+  const signoPron =
+    glPron > gvPron ? "L" :
+    glPron < gvPron ? "V" :
+    "E";
+
+  if (exacto) {
+    match.classList.add("exacto");
+  } else if (signoReal === signoPron) {
+    match.classList.add("acierto");
+  } else {
+    match.classList.add("error");
+  }
 }
     }
   });
