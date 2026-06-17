@@ -483,6 +483,7 @@ cargarPartidos();
   const { data, error } = await db
     .from("partidos")
     .select("*")
+    .eq("cerrado", false)
     .order("grupo", { ascending: true })
     .order("fecha", { ascending: true });
 
