@@ -335,6 +335,9 @@
   </header>
 
   <div class="toolbar">
+    <button onclick="window.location.href='index.html'">
+  ← Menú principal
+</button>
     <button onclick="window.print()">Imprimir / Guardar PDF</button>
     <button onclick="cargarPlayoffs()">🔄 Actualizar datos</button>
     <select id="partidoAguardar" class="admin-select" onchange="actualizarBotonGuardarGeneral()"></select>
@@ -463,12 +466,22 @@ function crearEquipoHTML(id, lado) {
     </div>
   `;
 }
+function nombrePartido(id) {
+  if (id >= 1 && id <= 16) return `Partido ${id}`;
+  if (id >= 17 && id <= 24) return `Octavos ${id - 16}`;
+  if (id >= 25 && id <= 28) return `Cuartos ${id - 24}`;
+  if (id === 29) return "Semifinal 1";
+  if (id === 30) return "Semifinal 2";
+  if (id === 31) return "Tercer puesto";
+  if (id === 32) return "Final";
+  return `Partido ${id}`;
+}
 
 function crearPartidoHTML(id, left, top) {
   return `
     <div class="match generado" style="left:${left}px; top:${top}px;">
       <div class="match-label">
-        Partido ${id}
+        ${nombrePartido(id)}
         <select id="p${id}-ganador-manual" class="penales-select" style="display:none;" onchange="actualizarBotonGuardarGeneral();">
           <option value="">Penales</option>
           <option value="local">L</option>
