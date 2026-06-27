@@ -314,6 +314,9 @@
   </header>
 
   <div class="toolbar">
+  <button onclick="window.location.href='index.html'">
+  ← Menú principal
+</button>  
     <button onclick="window.print()">Imprimir / Guardar PDF</button>
     <button id="btnGuardarFase" onclick="guardarFaseActual()">
   💾 Guardar 16avos
@@ -396,6 +399,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+let usuarioActual = null;
+
+const usuarioGuardado = localStorage.getItem("usuario");
+
+if (!usuarioGuardado) {
+    alert("Debés iniciar sesión.");
+    window.location.href = "index.html";
+}
+
+usuarioActual = JSON.parse(usuarioGuardado);
+
+console.log("Usuario:", usuarioActual);  
 const SUPABASE_URL = "https://udkujkdbdnbkmidcraqx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_zXUMOP2wW5uuT80pDjPw4g_uIzgt3tC";
 
@@ -412,6 +427,7 @@ const FASES = [
 
 let partidosCache = [];
 let clasificadosCache = [];
+let resultadosRealesCache = [];
 
 function buscarClasificado(clasificados, posicion) {
   return clasificados.find(c => c.posicion === posicion);
@@ -448,12 +464,22 @@ function crearEquipoHTML(id, lado) {
   </div>
 `;
 }
+function nombrePartido(id) {
+  if (id >= 1 && id <= 16) return `Partido ${id}`;
+  if (id >= 17 && id <= 24) return `Octavos ${id - 16}`;
+  if (id >= 25 && id <= 28) return `Cuartos ${id - 24}`;
+  if (id === 29) return "Semifinal 1";
+  if (id === 30) return "Semifinal 2";
+  if (id === 31) return "Tercer puesto";
+  if (id === 32) return "Final";
+  return `Partido ${id}`;
+}
 
 function crearPartidoHTML(id, left, top) {
   return `
     <div class="match generado" id="p${id}-match" style="left:${left}px; top:${top}px;">
       <div class="match-label">
-        Partido ${id}
+        ${nombrePartido(id)}
         <select id="p${id}-ganador-manual" class="penales-select" style="display:none;" onchange="actualizarBotonDesdeDOM();">
           <option value="">Penales</option>
           <option value="local">L</option>
@@ -692,98 +718,158 @@ function habilitarSoloFase(partidos) {
 async function cargarPlayoffs() {
   generarTodosLosPartidos();
 
-  const { data: partidos, error: errorPartidos } = await db
+  const { data: partidosFixture, error: errorPartidos } = await db
     .from("playoffs")
     .select("*")
     .order("id", { ascending: true });
+
+  const { data: pronosticosUsuario, error: errorPronosticos } = await db
+    .from("pronosticos_playoffs")
+    .select("*")
+    .eq("usuario_id", usuarioActual.id);
 
   const { data: clasificados, error: errorClasificados } = await db
     .from("clasificados")
     .select("*")
     .order("posicion", { ascending: true });
+
   const { data: resultadosReales, error: errorResultadosReales } = await db
     .from("resultados_playoffs")
     .select("*")
-    .order("id", { ascending: true }); 
+    .order("id", { ascending: true });
 
-    if (errorPartidos || errorClasificados || errorResultadosReales) {
-    console.error("Error cargando datos:", errorPartidos || errorClasificados);
+  if (errorPartidos || errorPronosticos || errorClasificados || errorResultadosReales) {
+    console.error("Error cargando datos:", {
+      errorPartidos,
+      errorPronosticos,
+      errorClasificados,
+      errorResultadosReales
+    });
     return;
   }
 
-  partidosCache = partidos || [];
+  partidosCache = (partidosFixture || []).map(partido => {
+    const pronostico = (pronosticosUsuario || []).find(
+      p => Number(p.partido_id) === Number(partido.id)
+    );
+
+    return {
+      ...partido,
+      goles_local: pronostico ? pronostico.goles_local : null,
+      goles_visitante: pronostico ? pronostico.goles_visitante : null,
+      ganador_manual: pronostico ? pronostico.clasificado : null
+    };
+  });
+
   clasificadosCache = clasificados || [];
+  resultadosRealesCache = resultadosReales || [];
 
-  console.log("PLAYOFFS:", partidosCache);
-  console.table(clasificadosCache);
+  for (let id = 1; id <= 32; id++) {
+  pintarPartidoDesdeOrigen(partidosCache, clasificadosCache, id);
+  pintarResultadoReal(partidosCache, resultadosReales || [], id);
+}
+actualizarBloqueosPlayoffs();
+}
+function actualizarBloqueosPlayoffs() {
+  for (let id = 1; id <= 32; id++) {
+    const partido = partidosCache.find(p => Number(p.id) === id);
+    const real = resultadosRealesCache.find(r => Number(r.id) === id);
 
-    for (let id = 1; id <= 32; id++) {
-    pintarPartidoDesdeOrigen(partidosCache, clasificadosCache, id);
-    pintarResultadoReal(partidosCache, resultadosReales || [], id);
+    if (!partido) continue;
+
+    const yaPronostico = partidoCompletoEnBase(partido);
+    const yaTieneResultadoReal = partidoCompletoEnBase(real);
+
+    const tieneLocal = !!buscarClasificado(clasificadosCache, partido.origen_local);
+    const tieneVisitante = !!buscarClasificado(clasificadosCache, partido.origen_visitante);
+
+    const habilitado =
+      tieneLocal &&
+      tieneVisitante &&
+      !yaPronostico &&
+      !yaTieneResultadoReal;
+
+    const gl = document.getElementById(`p${id}-goles-local`);
+    const gv = document.getElementById(`p${id}-goles-visitante`);
+    const gm = document.getElementById(`p${id}-ganador-manual`);
+
+    if (gl) gl.disabled = !habilitado;
+    if (gv) gv.disabled = !habilitado;
+    if (gm) gm.disabled = !habilitado;
   }
-
-    actualizarBotonGuardar(partidosCache);
-  habilitarSoloFase(partidosCache);
 }
 
 async function guardarFaseActual() {
-  const fase = obtenerFaseActual(partidosCache);
+  const pronosticos = [];
 
-  if (!fase) {
-    alert("✅ Los playoffs ya están completos");
-    return;
-  }
+  for (let id = 1; id <= 32; id++) {
+    const glInput = document.getElementById(`p${id}-goles-local`);
+    const gvInput = document.getElementById(`p${id}-goles-visitante`);
+    
 
-  for (let id = fase.desde; id <= fase.hasta; id++) {
+    if (!glInput || !gvInput) continue;
+    if (glInput.disabled && gvInput.disabled) continue;
+
     const goles = leerGoles(id);
 
     if (goles.goles_local === null || goles.goles_visitante === null) {
-      alert(`⚠️ Falta cargar resultado del Partido ${id}`);
-      return;
+      continue;
     }
 
-    if (goles.goles_local === goles.goles_visitante) {
-      const ganadorManual = document.getElementById(`p${id}-ganador-manual`).value;
+    let clasificado = null;
 
-      if (!ganadorManual) {
+    if (goles.goles_local > goles.goles_visitante) {
+      clasificado = "local";
+    } else if (goles.goles_visitante > goles.goles_local) {
+      clasificado = "visitante";
+    } else {
+      clasificado = document.getElementById(`p${id}-ganador-manual`).value;
+
+      if (!clasificado) {
         alert(`⚠️ Partido ${id} empatado: falta elegir ganador por penales`);
         return;
       }
     }
+
+    pronosticos.push({
+      usuario_id: usuarioActual.id,
+      partido_id: id,
+      goles_local: goles.goles_local,
+      goles_visitante: goles.goles_visitante,
+      clasificado: clasificado
+    });
   }
 
-  const actualizaciones = [];
-
-  for (let id = fase.desde; id <= fase.hasta; id++) {
-    const goles = leerGoles(id);
-
-    const esEmpate = goles.goles_local === goles.goles_visitante;
-    const ganadorManual = esEmpate
-      ? document.getElementById(`p${id}-ganador-manual`).value
-      : null;
-
-    actualizaciones.push(
-      db
-        .from("playoffs")
-        .update({
-          goles_local: goles.goles_local,
-          goles_visitante: goles.goles_visitante,
-          ganador_manual: ganadorManual
-        })
-        .eq("id", id)
-    );
-  }
-
-  const resultados = await Promise.all(actualizaciones);
-  const error = resultados.find(r => r.error);
-
-  if (error) {
-    console.error("Error guardando fase:", error.error);
-    alert("Error guardando pronósticos");
+  if (pronosticos.length === 0) {
+    alert("No hay partidos completos para guardar.");
     return;
   }
 
-  alert(`✅ Pronósticos de ${fase.nombre} guardados correctamente`);
+  const { error } = await db
+    .from("pronosticos_playoffs")
+.insert(pronosticos);
+
+  if (error) {
+  console.error("Error guardando pronósticos:", error);
+
+  if (error.code === "23505") {
+    alert("⚠️ Algunos partidos ya estaban guardados y no pueden modificarse.");
+  } else {
+    alert("Error guardando pronósticos");
+  }
+
+  return;
+}
+
+  await Promise.all(
+    pronosticos.map(p =>
+      db.rpc("recalcular_puntos_playoffs_partido", {
+        p_partido_id: p.partido_id
+      })
+    )
+  );
+
+  alert(`✅ Se guardaron ${pronosticos.length} pronóstico(s).`);
   await cargarPlayoffs();
 }
 function obtenerLadoGanador(p) {
@@ -850,6 +936,48 @@ function pintarResultadoReal(pronosticos, reales, id) {
   if (estado) {
     match.classList.add(estado);
   }
+}
+function calcularClasificadosUsuario(partidos, clasificadosBase) {
+  const extras = [];
+
+  function buscar(posicion) {
+    return extras.find(c => c.posicion === posicion) ||
+           clasificadosBase.find(c => c.posicion === posicion);
+  }
+
+  for (let id = 1; id <= 30; id++) {
+    const p = partidos.find(x => x.id === id);
+    if (!partidoCompletoEnBase(p)) continue;
+
+    const ganador = obtenerLadoGanador(p);
+    const perdedor = ganador === "local" ? "visitante" : "local";
+
+    const origenGanador = ganador === "local" ? p.origen_local : p.origen_visitante;
+    const equipoGanador = buscar(origenGanador);
+
+    if (equipoGanador) {
+      extras.push({
+        posicion: `G${id}`,
+        equipo: equipoGanador.equipo,
+        bandera: equipoGanador.bandera
+      });
+    }
+
+    if (id === 29 || id === 30) {
+      const origenPerdedor = perdedor === "local" ? p.origen_local : p.origen_visitante;
+      const equipoPerdedor = buscar(origenPerdedor);
+
+      if (equipoPerdedor) {
+        extras.push({
+          posicion: `P${id}`,
+          equipo: equipoPerdedor.equipo,
+          bandera: equipoPerdedor.bandera
+        });
+      }
+    }
+  }
+
+  return extras;
 }
 cargarPlayoffs();
 </script>
