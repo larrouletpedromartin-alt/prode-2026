@@ -249,6 +249,39 @@
   text-align: center;
   font-size: 14px;
 }
+.menu{
+  max-width:1100px;
+  margin:0 auto 18px;
+  padding:0 14px;
+  display:flex;
+  gap:12px;
+}
+
+.menu a{
+  display:inline-block;
+  padding:10px 18px;
+  background:#10233f;
+  color:#f4f7fb;
+  text-decoration:none;
+  border-radius:10px;
+  border:1px solid #263c5d;
+  font-weight:700;
+  transition:.2s;
+}
+
+.menu a:hover{
+  background:#183a66;
+}
+.menu a.activo{
+    background:#40c9ff;
+    color:#071528;
+}
+.total-puntos{
+    font-weight:900;
+    color:#ffcc66;
+    font-size:17px;
+}
+
    @media print {
   header, .topbar, #aviso-global, .leyenda-colores, #admin-resultados, button {
     display: none !important;
@@ -292,28 +325,48 @@
     margin: 20px 0;
     color: black;
   }
-} 
+
+ 
   </style>
 </head>
 <body>
   <header>
+    <nav class="menu">
+
+  <a href="index.html" class="activo">
+  ⚽ Grupos
+</a>
+
+<a id="linkPlayoffs" href="playoffs.html" style="display:none;">
+  🏆 Playoffs
+</a>
+
+<a id="linkAdmin" href="admin_playoffs.html" style="display:none;">
+  ⚙️ Carga de resultados playoffs
+</a>
+</nav>
+   
+</div>
     <h1>🏆 Prode Mundial 2026</h1>
     <p>Marcador exacto: 3 pts · Ganador / empate / perdedor: 1 pt</p>
   </header>
+   
 
   <section class="topbar">
     <div class="ranking">
       <h2>Tabla de posiciones</h2>
       <table>
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Participante</th>
-            <th>Pts</th>
-            <th>Exactos</th>
-            <th>Aciertos</th>
-            <th>Errores</th>
-          </tr>
+        <tr>
+          <th> # </th>
+          <th>Participante</th>
+          <th>Grupos</th>
+          <th>Playoffs</th>
+          <th>Total</th>
+          <th>Exactos</th>
+          <th>Aciertos</th>
+          <th>Errores</th>
+        </tr>
         </thead>
         <tbody id="ranking-body">
         </tbody>
@@ -421,6 +474,11 @@ const usuarioGuardado = localStorage.getItem("usuario");
 
 if (usuarioGuardado) {
   usuarioActual = JSON.parse(usuarioGuardado);
+  document.getElementById("linkPlayoffs").style.display = "inline-block";
+
+if (usuarioActual.rol === "admin") {
+    document.getElementById("linkAdmin").style.display = "inline-block";
+}
 
   document.getElementById("usuarioLogueado").textContent =
     "Hola " + usuarioActual.nombre;
@@ -451,15 +509,15 @@ if (usuarioGuardado) {
 }
 
 actualizarVistaSesion();
-  async function cargarRanking() {
+ async function cargarRanking() {
   const { data, error } = await db
-    .from("ranking")
+    .from("ranking_total_v2")
     .select("*");
 
   const tbody = document.getElementById("ranking-body");
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="6">Error cargando ranking</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8">Error cargando ranking</td></tr>`;
     console.error(error);
     return;
   }
@@ -470,15 +528,21 @@ actualizarVistaSesion();
     .eq("cerrado", true);
 
   tbody.innerHTML = "";
+  const { count: playoffsCerrados } = await db
+  .from("resultados_playoffs")
+  .select("*", { count: "exact", head: true })
+  .eq("cerrado", true);
 
   data.forEach((r, index) => {
-    const errores = partidosCerrados - (r.exactos + r.aciertos_gpe);
+    const errores = (partidosCerrados + playoffsCerrados) - (r.exactos + r.aciertos_gpe);
 
     tbody.innerHTML += `
       <tr>
         <td>${index + 1}</td>
         <td>${r.nombre}</td>
         <td>${r.puntos}</td>
+        <td>${r.puntos_playoffs}</td>
+        <td class="total-puntos">${r.total}</td>
         <td>${r.exactos}</td>
         <td>${r.aciertos_gpe}</td>
         <td>${errores}</td>
@@ -486,7 +550,6 @@ actualizarVistaSesion();
     `;
   });
 }
-
 cargarRanking();
 async function cargarPartidos() {
   const { data, error } = await db
@@ -747,6 +810,11 @@ localStorage.setItem(
   JSON.stringify(data[0])
 );
 usuarioActual = data[0];
+document.getElementById("linkPlayoffs").style.display = "inline-block";
+
+if (usuarioActual.rol === "admin") {
+    document.getElementById("linkAdmin").style.display = "inline-block";
+}
 actualizarVistaSesion();
 
 if (usuarioActual) {
@@ -836,6 +904,8 @@ async function guardarGrupo(grupo) {
   document.getElementById("btnLogout").addEventListener("click", () => {
 
   localStorage.removeItem("usuario");
+  document.getElementById("linkPlayoffs").style.display = "none";
+  document.getElementById("linkAdmin").style.display = "none";
 
   location.reload();
 
