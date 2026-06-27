@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prode Mundial 2026 - Playoffs</title>
+  <style>
+    :root {
+      --bg: #071528;
+      --card: #10233f;
+      --card2: #0d1d35;
+      --text: #f4f7fb;
+      --muted: #9fb0c8;
+      --line: #355a86;
+      --accent: #40c9ff;
+      --good: #35d07f;
+      --bad: #ff6b6b;
+      --gold: #ffcc66;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 8%, rgba(64,201,255,.22), transparent 25%),
+        radial-gradient(circle at 70% 50%, rgba(64,201,255,.13), transparent 20%),
+        linear-gradient(180deg, #061326, #030914);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 22px 14px 8px;
+    }
+
+    header h1 { margin: 0; font-size: 30px; }
+    header p { margin: 6px 0 0; color: var(--muted); }
+
+    .note {
+      max-width: 1220px;
+      margin: 12px auto 16px;
+      background: var(--gold);
+      color: #071528;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #00101f;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .bracket-wrap {
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 0 14px 28px;
+      overflow-x: auto;
+    }
+
+    .bracket {
+      position: relative;
+      width: 1500px;
+      height: 1180px;
+      margin: 0 auto;
+    }
+    .penales-select {
+  float: right;
+  width: 58px;
+  height: 18px;
+  font-size: 10px;
+  border-radius: 6px;
+}
+
+    .phase-title {
+      position: absolute;
+      width: 190px;
+      height: 24px;
+      line-height: 24px;
+      border-radius: 9px;
+      background: #f4f7fb;
+      color: #10233f;
+      font-size: 12px;
+      font-weight: 950;
+      text-align: center;
+      text-transform: uppercase;
+      z-index: 4;
+    }
+
+    .title-left-32 { left: 0; top: 0; }
+    .title-left-16 { left: 240px; top: 74px; }
+    .title-left-8  { left: 480px; top: 168px; }
+    .title-left-4  { left: 655px; top: 390px; display:none; }
+
+    .title-right-32 { right: 0; top: 0; }
+    .title-right-16 { right: 240px; top: 74px; }
+    .title-right-8  { right: 480px; top: 168px; }
+    .title-right-4  { right: 720px; top: 330px; display:none; }
+
+    .match {
+      position: absolute;
+      width: 190px;
+      background: rgba(16, 35, 63, .96);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.25);
+      padding: 7px;
+      z-index: 3;
+    }
+
+    .match-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin: 0 0 5px 2px;
+    }
+
+    .team {
+      display: grid;
+      grid-template-columns: 24px 1fr 22px 30px;
+      gap: 5px;
+      align-items: center;
+      min-height: 32px;
+      margin-bottom: 5px;
+      padding: 5px;
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: var(--card2);
+    }
+
+    .team:last-child { margin-bottom: 0; }
+
+    .flag { font-size: 16px; text-align: center; }
+    .name {
+      font-size: 11px;
+      font-weight: 850;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .score {
+      height: 23px;
+      border-radius: 8px;
+      background: #edf3fa;
+      color: #071528;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 950;
+      font-size: 13px;
+    }
+
+    .score select {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      color: #071528;
+      font-weight: 950;
+      text-align: center;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .real-result {
+  display: none;
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--muted);
+  text-align: center;
+}
+
+.match.exacto {
+  border: 2px solid var(--good);
+  box-shadow: 0 0 18px rgba(53,208,127,.28);
+}
+
+.match.acierto {
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 18px rgba(255,204,102,.35);
+}
+.match.error {
+  border: 2px solid var(--bad);
+  box-shadow: 0 0 18px rgba(255,107,107,.28);
+}
+
+    select:disabled {
+      opacity: .75;
+      cursor: not-allowed;
+    }
+
+    button:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+    }
+
+    .team.win {
+      border: 2px solid var(--good);
+      background: rgba(53, 208, 127, .20);
+    }
+
+    .team.lose {
+      border: 2px solid var(--bad);
+      background: rgba(255, 107, 107, .16);
+      opacity: .82;
+    }
+
+    .final {
+      width: 250px;
+      border: 2px solid var(--gold);
+      background:
+        radial-gradient(circle at top, rgba(255,204,102,.22), transparent 45%),
+        rgba(16,35,63,.97);
+    }
+
+    .final .match-label {
+      color: var(--gold);
+      text-align: center;
+      font-size: 15px;
+      letter-spacing: .5px;
+    }
+
+    .third {
+      width: 220px;
+      border-color: rgba(255,204,102,.65);
+    }
+
+    svg.lines {
+      position: absolute;
+      inset: 0;
+      width: 1500px;
+      height: 1180px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .line {
+      fill: none;
+      stroke: rgba(64,201,255,.46);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .line.win {
+      stroke: rgba(53,208,127,.85);
+      stroke-width: 3;
+    }
+
+    .orbit {
+      position: absolute;
+      left: 545px;
+      top: 300px;
+      width: 410px;
+      height: 410px;
+      border-radius: 50%;
+      border: 2px solid rgba(64,201,255,.18);
+      transform: rotate(-25deg);
+      box-shadow: 0 0 28px rgba(64,201,255,.16);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .real-score {
+  font-size: 11px;
+  font-weight: 950;
+  color: var(--gold);
+  text-align: center;
+}
+
+    @media print {
+      body { background: white !important; color: black !important; }
+      header, .note, .toolbar { display: none !important; }
+      .bracket-wrap { overflow: visible; padding: 0; }
+      .bracket { transform: scale(.65); transform-origin: top left; }
+      .match { background: white !important; color: black !important; box-shadow: none !important; border: 1px solid #999 !important; }
+      .team { background: white !important; color: black !important; }
+      body::before {
+        content: "PRODE MUNDIAL 2026 - CUADRO PLAYOFFS";
+        display: block;
+        text-align: center;
+        font-size: 22px;
+        font-weight: 900;
+        margin: 20px 0;
+        color: black;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏆 Prode Mundial 2026 - Playoffs</h1>
+    <p>Prototipo visual independiente · V4 centro reordenado</p>
+  </header>
+
+  <div class="toolbar">
+    <button onclick="window.print()">Imprimir / Guardar PDF</button>
+    <button id="btnGuardarFase" onclick="guardarFaseActual()">
+  💾 Guardar 16avos
+</button>
+  </div>
+
+  <div class="note">Maqueta visual: los cruces están conectados por líneas y centrados entre partidos.</div>
+
+  <div class="bracket-wrap">
+    <div class="bracket">
+      <div class="orbit"></div>
+
+      <div class="phase-title title-left-32">16avos · Zona A</div>
+      <div class="phase-title title-left-16">Octavos</div>
+      <div class="phase-title title-left-8">Cuartos</div>
+      <div class="phase-title title-left-4">Semifinal</div>
+
+      <div class="phase-title title-right-32">16avos · Zona B</div>
+      <div class="phase-title title-right-16">Octavos</div>
+      <div class="phase-title title-right-8">Cuartos</div>
+
+      <svg class="lines" viewBox="0 0 1500 1180" preserveAspectRatio="none">
+        <!-- Izquierda: 32avos a octavos -->
+        <path class="line" d="M190 94 H214 V151 H240" />
+        <path class="line" d="M190 208 H214 V151 H240" />
+        <path class="line" d="M190 322 H214 V379 H240" />
+        <path class="line" d="M190 436 H214 V379 H240" />
+        <path class="line" d="M190 550 H214 V607 H240" />
+        <path class="line" d="M190 664 H214 V607 H240" />
+        <path class="line" d="M190 778 H214 V835 H240" />
+        <path class="line" d="M190 892 H214 V835 H240" />
+
+        <!-- Izquierda: octavos a cuartos -->
+        <path class="line" d="M430 151 H454 V265 H480" />
+        <path class="line" d="M430 379 H454 V265 H480" />
+        <path class="line" d="M430 607 H454 V721 H480" />
+        <path class="line" d="M430 835 H454 V721 H480" />
+
+        <!-- Izquierda: cuartos a semifinal A -->
+        <path class="line" d="M570 335  V493 " /> 
+        <path class="line" d="M570 535 V680 " />
+
+        
+
+        <!-- Semifinales a final -->
+        <path class="line win" d="M720 540 H625" />
+        <path class="line win" d="M780 540 H875" />
+        <!-- Derecha: 32avos a octavos -->
+        <path class="line" d="M1310 94 H1286 V151 H1260" />
+        <path class="line" d="M1310 208 H1286 V151 H1260" />
+        <path class="line" d="M1310 322 H1286 V379 H1260" />
+        <path class="line" d="M1310 436 H1286 V379 H1260" />
+        <path class="line" d="M1310 550 H1286 V607 H1260" />
+        <path class="line" d="M1310 664 H1286 V607 H1260" />
+        <path class="line" d="M1310 778 H1286 V835 H1260" />
+        <path class="line" d="M1310 892 H1286 V835 H1260" />
+
+        <!-- Derecha: octavos a cuartos -->
+        <path class="line" d="M1070 151 H1046 V265 H1020" />
+        <path class="line" d="M1070 379 H1046 V265 H1020" />
+        <path class="line" d="M1070 607 H1046 V721 H1020" />
+        <path class="line" d="M1070 835 H1046 V721 H1020" />
+
+        <!-- Derecha: cuartos a semifinal B -->
+        <path class="line" d="M930 265  V493 " />
+        <path class="line" d="M930 721  V493 " />
+        
+
+        <!-- Final a tercer puesto -->
+        <path class="line" d="M750 465 V850" />
+      </svg>
+
+      <!-- Zona izquierda 32avos -->
+      <div id="playoffs-32-left"></div>
+
+            <!-- Zona derecha 32avos -->
+      <div id="playoffs-32-right"></div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://udkujkdbdnbkmidcraqx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_zXUMOP2wW5uuT80pDjPw4g_uIzgt3tC";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const FASES = [
+  { nombre: "16avos", desde: 1, hasta: 16 },
+  { nombre: "Octavos", desde: 17, hasta: 24 },
+  { nombre: "Cuartos", desde: 25, hasta: 28 },
+  { nombre: "Semifinales", desde: 29, hasta: 30 },
+  { nombre: "Tercer puesto", desde: 31, hasta: 31 },
+  { nombre: "Final", desde: 32, hasta: 32 }
+];
+
+let partidosCache = [];
+let clasificadosCache = [];
+
+function buscarClasificado(clasificados, posicion) {
+  return clasificados.find(c => c.posicion === posicion);
+}
+
+function opcionesGoles(valorActual) {
+  let html = `<option value="">-</option>`;
+
+  for (let i = 0; i <= 10; i++) {
+    const selected = valorActual === i ? "selected" : "";
+    html += `<option value="${i}" ${selected}>${i}</option>`;
+  }
+
+  return html;
+}
+
+function crearEquipoHTML(id, lado) {
+  return `
+  <div class="team" id="p${id}-team-${lado}">
+    <span class="flag" id="p${id}-bandera-${lado}">🏳️</span>
+
+    <span class="name" id="p${id}-${lado}">
+      ${lado === "local" ? "Local" : "Visitante"}
+    </span>
+
+    <span class="real-score" id="p${id}-real-${lado}">-</span>
+
+    <span class="score">
+      <select id="p${id}-goles-${lado}"
+              onchange="actualizarSelectorGanador(${id}); actualizarBotonDesdeDOM();">
+        ${opcionesGoles(null)}
+      </select>
+    </span>
+  </div>
+`;
+}
+
+function crearPartidoHTML(id, left, top) {
+  return `
+    <div class="match generado" id="p${id}-match" style="left:${left}px; top:${top}px;">
+      <div class="match-label">
+        Partido ${id}
+        <select id="p${id}-ganador-manual" class="penales-select" style="display:none;" onchange="actualizarBotonDesdeDOM();">
+          <option value="">Penales</option>
+          <option value="local">L</option>
+          <option value="visitante">V</option>
+        </select>
+      </div>
+            ${crearEquipoHTML(id, "local")}
+      ${crearEquipoHTML(id, "visitante")}
+      <div class="real-result" id="p${id}-real"></div>
+    </div>
+  `;
+}
+
+function generarTodosLosPartidos() {
+  document.querySelectorAll(".match.generado").forEach(m => m.remove());
+
+  const left16 = document.getElementById("playoffs-32-left");
+  const right16 = document.getElementById("playoffs-32-right");
+
+  const tops16 = [54, 168, 282, 396, 510, 624, 738, 852];
+
+  left16.innerHTML = tops16
+    .map((top, index) => crearPartidoHTML(index + 1, 0, top))
+    .join("");
+
+  right16.innerHTML = tops16
+    .map((top, index) => crearPartidoHTML(index + 9, 1310, top))
+    .join("");
+
+  const partidosRestantes = [
+    { id: 17, left: 240, top: 111 },
+    { id: 18, left: 240, top: 339 },
+    { id: 19, left: 240, top: 567 },
+    { id: 20, left: 240, top: 795 },
+
+    { id: 21, left: 1070, top: 111 },
+    { id: 22, left: 1070, top: 339 },
+    { id: 23, left: 1070, top: 567 },
+    { id: 24, left: 1070, top: 795 },
+
+    { id: 25, left: 480, top: 225 },
+    { id: 26, left: 480, top: 681 },
+    { id: 27, left: 830, top: 225 },
+    { id: 28, left: 830, top: 681 },
+
+    { id: 29, left: 440, top: 453, width: 180 },
+    { id: 30, left: 880, top: 453, width: 180 },
+
+    { id: 31, left: 625, top: 850, width: 250 },
+    { id: 32, left: 625, top: 450, width: 250 }
+  ];
+
+  partidosRestantes.forEach(p => {
+    const div = document.createElement("div");
+    div.innerHTML = crearPartidoHTML(p.id, p.left, p.top);
+    const match = div.firstElementChild;
+
+    if (p.width) match.style.width = `${p.width}px`;
+    if (p.id === 31) match.classList.add("third");
+    if (p.id === 32) match.classList.add("final");
+
+    document.querySelector(".bracket").appendChild(match);
+  });
+}
+
+function actualizarSelectorGanador(id) {
+  const gl = document.getElementById(`p${id}-goles-local`)?.value ?? "";
+  const gv = document.getElementById(`p${id}-goles-visitante`)?.value ?? "";
+  const selector = document.getElementById(`p${id}-ganador-manual`);
+
+  if (!selector) return;
+
+  if (gl !== "" && gv !== "" && Number(gl) === Number(gv)) {
+    selector.style.display = "inline-block";
+  } else {
+    selector.style.display = "none";
+    selector.value = "";
+  }
+}
+
+function pintarPartidoDesdeOrigen(partidos, clasificados, id) {
+  const partido = partidos.find(p => p.id === id);
+  if (!partido) return;
+
+  const local = document.getElementById(`p${id}-local`);
+  const visitante = document.getElementById(`p${id}-visitante`);
+  const banderaLocal = document.getElementById(`p${id}-bandera-local`);
+  const banderaVisitante = document.getElementById(`p${id}-bandera-visitante`);
+  const golesLocal = document.getElementById(`p${id}-goles-local`);
+  const golesVisitante = document.getElementById(`p${id}-goles-visitante`);
+  const selectorGanador = document.getElementById(`p${id}-ganador-manual`);
+
+  if (!local || !visitante || !golesLocal || !golesVisitante) return;
+
+  const origenLocal = partido.origen_local || "Local";
+  const origenVisitante = partido.origen_visitante || "Visitante";
+
+  const clasLocal = buscarClasificado(clasificados, origenLocal);
+  const clasVisitante = buscarClasificado(clasificados, origenVisitante);
+
+  local.textContent = clasLocal ? clasLocal.equipo : origenLocal;
+  visitante.textContent = clasVisitante ? clasVisitante.equipo : origenVisitante;
+
+  banderaLocal.textContent = clasLocal ? clasLocal.bandera : "🏳️";
+  banderaVisitante.textContent = clasVisitante ? clasVisitante.bandera : "🏳️";
+
+  golesLocal.value = partido.goles_local ?? "";
+  golesVisitante.value = partido.goles_visitante ?? "";
+
+  if (selectorGanador) {
+    actualizarSelectorGanador(id);
+    selectorGanador.value = partido.ganador_manual ?? "";
+  }
+}
+
+function leerGoles(id) {
+  const gl = document.getElementById(`p${id}-goles-local`).value;
+  const gv = document.getElementById(`p${id}-goles-visitante`).value;
+
+  return {
+    goles_local: gl === "" ? null : Number(gl),
+    goles_visitante: gv === "" ? null : Number(gv)
+  };
+}
+
+function partidoCompletoEnBase(partido) {
+  if (!partido || partido.goles_local === null || partido.goles_visitante === null) {
+    return false;
+  }
+
+  if (partido.goles_local === partido.goles_visitante && !partido.ganador_manual) {
+    return false;
+  }
+
+  return true;
+}
+
+function partidoCompletoEnDOM(id) {
+  const goles = leerGoles(id);
+
+  if (goles.goles_local === null || goles.goles_visitante === null) {
+    return false;
+  }
+
+  if (goles.goles_local === goles.goles_visitante) {
+    return !!document.getElementById(`p${id}-ganador-manual`).value;
+  }
+
+  return true;
+}
+
+function faseCompleta(partidos, desde, hasta) {
+  for (let id = desde; id <= hasta; id++) {
+    const p = partidos.find(x => x.id === id);
+    if (!partidoCompletoEnBase(p)) return false;
+  }
+
+  return true;
+}
+
+function obtenerFaseActual(partidos) {
+  for (const fase of FASES) {
+    if (!faseCompleta(partidos, fase.desde, fase.hasta)) {
+      return fase;
+    }
+  }
+
+  return null;
+}
+
+function bloquearFase(desde, hasta) {
+  for (let id = desde; id <= hasta; id++) {
+    const gl = document.getElementById(`p${id}-goles-local`);
+    const gv = document.getElementById(`p${id}-goles-visitante`);
+    const gm = document.getElementById(`p${id}-ganador-manual`);
+
+    if (gl) gl.disabled = true;
+    if (gv) gv.disabled = true;
+    if (gm) gm.disabled = true;
+  }
+}
+
+function bloquearFasesCompletas(partidos) {
+  for (const fase of FASES) {
+    if (faseCompleta(partidos, fase.desde, fase.hasta)) {
+      bloquearFase(fase.desde, fase.hasta);
+    }
+  }
+}
+
+function actualizarBotonGuardar(partidos) {
+  partidosCache = partidos;
+  actualizarBotonDesdeDOM();
+}
+
+function actualizarBotonDesdeDOM() {
+  const btn = document.getElementById("btnGuardarFase");
+  const fase = obtenerFaseActual(partidosCache);
+
+  if (!btn) return;
+
+  if (!fase) {
+    btn.textContent = "✅ Playoffs completos";
+    btn.disabled = true;
+    return;
+  }
+
+  let cargados = 0;
+  const total = fase.hasta - fase.desde + 1;
+
+  for (let id = fase.desde; id <= fase.hasta; id++) {
+    if (partidoCompletoEnDOM(id)) cargados++;
+  }
+
+  btn.textContent = `💾 Guardar ${fase.nombre} (${cargados}/${total})`;
+  btn.disabled = false;
+}
+function habilitarSoloFase(partidos) {
+  const fase = obtenerFaseActual(partidos);
+
+  for (let id = 1; id <= 32; id++) {
+    const habilitado =
+      fase &&
+      id >= fase.desde &&
+      id <= fase.hasta;
+
+    const gl = document.getElementById(`p${id}-goles-local`);
+    const gv = document.getElementById(`p${id}-goles-visitante`);
+    const penales = document.getElementById(`p${id}-ganador-manual`);
+
+    if (gl) gl.disabled = !habilitado;
+    if (gv) gv.disabled = !habilitado;
+    if (penales) penales.disabled = !habilitado;
+  }
+}
+async function cargarPlayoffs() {
+  generarTodosLosPartidos();
+
+  const { data: partidos, error: errorPartidos } = await db
+    .from("playoffs")
+    .select("*")
+    .order("id", { ascending: true });
+
+  const { data: clasificados, error: errorClasificados } = await db
+    .from("clasificados")
+    .select("*")
+    .order("posicion", { ascending: true });
+  const { data: resultadosReales, error: errorResultadosReales } = await db
+    .from("resultados_playoffs")
+    .select("*")
+    .order("id", { ascending: true }); 
+
+    if (errorPartidos || errorClasificados || errorResultadosReales) {
+    console.error("Error cargando datos:", errorPartidos || errorClasificados);
+    return;
+  }
+
+  partidosCache = partidos || [];
+  clasificadosCache = clasificados || [];
+
+  console.log("PLAYOFFS:", partidosCache);
+  console.table(clasificadosCache);
+
+    for (let id = 1; id <= 32; id++) {
+    pintarPartidoDesdeOrigen(partidosCache, clasificadosCache, id);
+    pintarResultadoReal(partidosCache, resultadosReales || [], id);
+  }
+
+    actualizarBotonGuardar(partidosCache);
+  habilitarSoloFase(partidosCache);
+}
+
+async function guardarFaseActual() {
+  const fase = obtenerFaseActual(partidosCache);
+
+  if (!fase) {
+    alert("✅ Los playoffs ya están completos");
+    return;
+  }
+
+  for (let id = fase.desde; id <= fase.hasta; id++) {
+    const goles = leerGoles(id);
+
+    if (goles.goles_local === null || goles.goles_visitante === null) {
+      alert(`⚠️ Falta cargar resultado del Partido ${id}`);
+      return;
+    }
+
+    if (goles.goles_local === goles.goles_visitante) {
+      const ganadorManual = document.getElementById(`p${id}-ganador-manual`).value;
+
+      if (!ganadorManual) {
+        alert(`⚠️ Partido ${id} empatado: falta elegir ganador por penales`);
+        return;
+      }
+    }
+  }
+
+  const actualizaciones = [];
+
+  for (let id = fase.desde; id <= fase.hasta; id++) {
+    const goles = leerGoles(id);
+
+    const esEmpate = goles.goles_local === goles.goles_visitante;
+    const ganadorManual = esEmpate
+      ? document.getElementById(`p${id}-ganador-manual`).value
+      : null;
+
+    actualizaciones.push(
+      db
+        .from("playoffs")
+        .update({
+          goles_local: goles.goles_local,
+          goles_visitante: goles.goles_visitante,
+          ganador_manual: ganadorManual
+        })
+        .eq("id", id)
+    );
+  }
+
+  const resultados = await Promise.all(actualizaciones);
+  const error = resultados.find(r => r.error);
+
+  if (error) {
+    console.error("Error guardando fase:", error.error);
+    alert("Error guardando pronósticos");
+    return;
+  }
+
+  alert(`✅ Pronósticos de ${fase.nombre} guardados correctamente`);
+  await cargarPlayoffs();
+}
+function obtenerLadoGanador(p) {
+  if (!p || p.goles_local === null || p.goles_visitante === null) return null;
+
+  if (p.goles_local > p.goles_visitante) return "local";
+  if (p.goles_visitante > p.goles_local) return "visitante";
+
+  return p.ganador_manual || null;
+}
+
+function calcularEstadoPronostico(pronostico, real) {
+  if (!partidoCompletoEnBase(pronostico) || !partidoCompletoEnBase(real)) {
+    return null;
+  }
+
+  const ganadorPronostico = obtenerLadoGanador(pronostico);
+  const ganadorReal = obtenerLadoGanador(real);
+
+  if (!ganadorPronostico || !ganadorReal) return null;
+
+  if (ganadorPronostico !== ganadorReal) {
+    return "error";
+  }
+
+  const exacto =
+    pronostico.goles_local === real.goles_local &&
+    pronostico.goles_visitante === real.goles_visitante;
+
+  return exacto ? "exacto" : "acierto";
+}
+
+function pintarResultadoReal(pronosticos, reales, id) {
+  const pronostico = pronosticos.find(p => p.id === id);
+  const real = reales.find(p => p.id === id);
+
+  const divReal = document.getElementById(`p${id}-real`);
+  const match = document.getElementById(`p${id}-match`);
+  const realLocal = document.getElementById(`p${id}-real-local`);
+  const realVisitante = document.getElementById(`p${id}-real-visitante`);
+
+  if (!divReal || !match) return;
+
+  match.classList.remove("exacto", "acierto", "error");
+
+  if (!partidoCompletoEnBase(real)) {
+    divReal.style.display = "none";
+    divReal.textContent = "";
+
+    if (realLocal) realLocal.textContent = "-";
+    if (realVisitante) realVisitante.textContent = "-";
+
+    return;
+  }
+
+  if (realLocal) realLocal.textContent = real.goles_local;
+  if (realVisitante) realVisitante.textContent = real.goles_visitante;
+
+  divReal.style.display = "none";
+  divReal.textContent = "";
+
+  const estado = calcularEstadoPronostico(pronostico, real);
+
+  if (estado) {
+    match.classList.add(estado);
+  }
+}
+cargarPlayoffs();
+</script>
+</body>
+</html>
