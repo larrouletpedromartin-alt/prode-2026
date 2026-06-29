@@ -886,20 +886,25 @@ function calcularEstadoPronostico(pronostico, real) {
     return null;
   }
 
-  const ganadorPronostico = obtenerLadoGanador(pronostico);
-  const ganadorReal = obtenerLadoGanador(real);
-
-  if (!ganadorPronostico || !ganadorReal) return null;
-
-  if (ganadorPronostico !== ganadorReal) {
-    return "error";
-  }
-
   const exacto =
     pronostico.goles_local === real.goles_local &&
     pronostico.goles_visitante === real.goles_visitante;
 
-  return exacto ? "exacto" : "acierto";
+  if (exacto) {
+    return "exacto";
+  }
+
+  const signoPron =
+    pronostico.goles_local > pronostico.goles_visitante ? "L" :
+    pronostico.goles_local < pronostico.goles_visitante ? "V" :
+    "E";
+
+  const signoReal =
+    real.goles_local > real.goles_visitante ? "L" :
+    real.goles_local < real.goles_visitante ? "V" :
+    "E";
+
+  return signoPron === signoReal ? "acierto" : "error";
 }
 
 function pintarResultadoReal(pronosticos, reales, id) {
